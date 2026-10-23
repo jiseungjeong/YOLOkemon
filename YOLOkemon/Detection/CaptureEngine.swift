@@ -67,8 +67,8 @@ final class CaptureEngine: ObservableObject {
                       _ captureTimeSeconds: Double,
                       _ attemptCount: Int) -> Void)?
 
-    /// Fired on the main actor when progress was already past
-    /// `lateFailureThreshold` and then collapsed back to 0. Lets the
+    /// Fired on the main actor when the current attempt had peaked at or
+    /// above `lateFailureThreshold` and then collapsed back to 0. Lets the
     /// UI play the "Got away!" animation only for near-misses — early
     /// 0→0.1 jitter stays silent.
     var onLateFailure: (() -> Void)?
@@ -103,6 +103,10 @@ final class CaptureEngine: ObservableObject {
 
     private var prevTargetBox: CGRect? = nil
     private var attemptCount: Int = 0
+    /// Highest progress reached in the current attempt. Decay steps are
+    /// only 0.5/75, so the value right before a collapse is always tiny;
+    /// the near-miss check has to look at the peak instead.
+    private var peakProgress: Double = 0
     private var captureStartedAt: CFTimeInterval? = nil
 
     // MARK: - Session control
@@ -116,6 +120,7 @@ final class CaptureEngine: ObservableObject {
         captureProgress = 0
         prevTargetBox = nil
         attemptCount = 0
+        peakProgress = 0
         captureStartedAt = CACurrentMediaTime()
         // Starting a fresh attempt ends any lingering celebration from
         // a previous catch — we're in capturing-mode again.
@@ -129,6 +134,7 @@ final class CaptureEngine: ObservableObject {
         targetClass = nil
         prevTargetBox = nil
         attemptCount = 0
+        peakProgress = 0
         captureStartedAt = nil
         lastCaptureAt = nil
     }
@@ -182,17 +188,19 @@ final class CaptureEngine: ObservableObject {
         let prevProgress = captureProgress
         let wasPositive = prevProgress > 0
         let next = (prevProgress + delta).clamped(to: 0...1)
+        peakProgress = max(peakProgress, next)
 
         // Reset-to-zero from a running attempt counts as one failure.
         if wasPositive && next == 0 && delta < 0 {
             attemptCount += 1
-            // Only fire the "Got away!" drama when we lost real progress
-            // (≥ lateFailureThreshold). Everything below is early-session
-            // jitter — letting those trigger would make the animation
-            // feel spammy.
-            if prevProgress >= lateFailureThreshold {
+            // Only fire the "Got away!" drama when this attempt had
+            // reached real progress (≥ lateFailureThreshold). Everything
+            // below is early-session jitter — letting those trigger would
+            // make the animation feel spammy.
+            if peakProgress >= lateFailureThreshold {
                 onLateFailure?()
             }
+            peakProgress = 0
         }
 
         captureProgress = next
