@@ -98,3 +98,9 @@ ops, so inference is fixed to CPU and precision is the single runtime knob.
   (Apache-2.0).
 - Pokémon and Poké Ball are trademarks of Nintendo / Creatures Inc. / GAME FREAK inc. This is an
   unofficial fan project with no affiliation.
+
+## License
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE), matching
+the license of the bundled Ultralytics YOLO26 models. The vendored TensorFlow Lite sources and
+framework remain under the Apache License 2.0.
