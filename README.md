@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="YOLOkemon/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="160" alt="YOLOkémon app icon">
+  <img src="docs/icon.png" width="160" alt="YOLOkémon app icon">
 </p>
 
 <h1 align="center">YOLOkémon</h1>
