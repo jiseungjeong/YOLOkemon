@@ -16,6 +16,16 @@ Pokédex of all 80 COCO classes. Under the hood it doubles as a benchmarking too
 between FP32, FP16 and INT8 models at runtime and compare latency, FPS, memory, thermal state
 and battery drain live.
 
+## Demo
+
+<p align="center">
+  <a href="https://www.youtube.com/shorts/AhYemXcHx1o">
+    <img src="https://img.youtube.com/vi/AhYemXcHx1o/maxresdefault.jpg" width="560" alt="YOLOkémon demo video">
+  </a>
+  <br>
+  <em>Watch the demo on YouTube</em>
+</p>
+
 ## Features
 
 - **Live detection**: camera preview with bounding boxes and class labels, fully on-device
